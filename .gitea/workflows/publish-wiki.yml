@@ -13,7 +13,7 @@
 #      repository: a Gitea token with scope write:repository for a user that
 #      can write this repository (see guides/credentials.md of github-action).
 #   2. Enable the wiki in the repository settings.
-#   3. Keep @v1, or pin the exact release tag together with tools-ref.
+#   3. Keep @v2, or pin the exact release tag together with tools-ref.
 # A runner must be registered for the repository (or its organization).
 #
 # prune: "true" deletes wiki pages that are not in docs/wiki/, so the wiki
@@ -30,7 +30,7 @@ on:
 
 jobs:
   wiki:
-    uses: TirSystem/github-action/.gitea/workflows/publish-wiki-pages.yml@v1
+    uses: TirSystem/github-action/.gitea/workflows/publish-wiki-pages.yml@v2
     with:
       wiki_dir: docs/wiki
       prune: "true"
