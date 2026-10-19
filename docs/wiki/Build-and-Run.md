@@ -1,6 +1,6 @@
 # Build and run
 
-**English**
+🌐 **English** · [Dansk](Build-and-Run-da) · [Bahasa Melayu](Build-and-Run-ms)
 
 The `Makefile` is in the repository root and puts the executable in `dist/`.
 It needs `gcc` (Linux, or MinGW-w64 / MSYS2 on Windows) and a CPU with AVX2.

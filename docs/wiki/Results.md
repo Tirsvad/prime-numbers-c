@@ -1,6 +1,6 @@
 # Results
 
-**English**
+🌐 **English** · [Dansk](Results-da) · [Bahasa Melayu](Results-ms)
 
 Time to find all primes from 0 to 1,000,000. Only the search is timed.
 
