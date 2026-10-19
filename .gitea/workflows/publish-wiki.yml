@@ -1,0 +1,38 @@
+# Publish the project's wiki pages to the git host's wiki.
+#
+# On a push to main that changes docs/wiki/, this workflow calls the reusable
+# workflow of TirSystem/github-action, which copies the Markdown pages of
+# docs/wiki/ to the wiki of this repository (framework/process/wiki.md says
+# what the folder holds: English and the PO language as a minimum).
+#
+# INSTALLING THIS FILE IS THE OPT-IN. There is no marker file. A project that
+# does not copy it publishes nothing.
+#
+# Copy it to .gitea/workflows/publish-wiki.yml. Then:
+#   1. Create the secret TOKEN_FOR_GITEA_WIKI in the organization of the
+#      repository: a Gitea token with scope write:repository for a user that
+#      can write this repository (see guides/credentials.md of github-action).
+#   2. Enable the wiki in the repository settings.
+#   3. Keep @v1, or pin the exact release tag together with tools-ref.
+# A runner must be registered for the repository (or its organization).
+#
+# prune: "true" deletes wiki pages that are not in docs/wiki/, so the wiki
+# always equals the folder. Leave it "false" to keep hand-written pages.
+
+name: Publish wiki
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "docs/wiki/**"
+  workflow_dispatch:
+
+jobs:
+  wiki:
+    uses: TirSystem/github-action/.gitea/workflows/publish-wiki-pages.yml@v1
+    with:
+      wiki_dir: docs/wiki
+      prune: "true"
+    secrets:
+      TOKEN_FOR_GITEA_WIKI: ${{ secrets.TOKEN_FOR_GITEA_WIKI }}
