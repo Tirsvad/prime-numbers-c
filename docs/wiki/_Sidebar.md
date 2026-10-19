@@ -1,4 +1,5 @@
 - [Home](Home)
 - [Description](Description)
+- [How AVX2 works](How-AVX2-Works)
 - [Results](Results)
 - [Build and run](Build-and-Run)

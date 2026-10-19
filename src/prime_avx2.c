@@ -18,30 +18,42 @@ bool is_prime_avx2(uint64_t n) {
     if (n % 2 == 0 || n % 3 == 0) return false;
     if (n > UINT32_MAX) return false; // out of supported range
 
+    // Only divisors up to sqrt(n) need testing: a factor above it pairs with one below it.
     const double limit = floor(sqrt((double)n));
 
+    // Broadcast n and the limit into all 4 double lanes of a 256-bit register.
     __m256d v_n     = _mm256_set1_pd((double)n);
     __m256d v_limit = _mm256_set1_pd(limit);
 
     // Divisors 5, 7, 11, 13 (6k +/- 1); each iteration advances by 12.
+    // Kept as 4 x int32 in a 128-bit register, converted to double each pass.
     __m128i v_div_i = _mm_setr_epi32(5, 7, 11, 13);
     const __m128i v_step = _mm_set1_epi32(12);
 
+    // base is the first divisor of the group; stop when it passes sqrt(n).
     for (double base = 5.0; base <= limit; base += 12.0) {
+        // Convert the 4 int32 divisors to 4 doubles.
         __m256d v_d   = _mm256_cvtepi32_pd(v_div_i);
+        // q = floor(n / d) for all 4 divisors at once.
         __m256d v_q   = _mm256_floor_pd(_mm256_div_pd(v_n, v_d));
+        // rem = n - q * d, which is n mod d.
         __m256d v_rem = _mm256_sub_pd(v_n, _mm256_mul_pd(v_q, v_d));
 
+        // Lane mask: all bits set where the remainder is 0 (d divides n).
         __m256d is_zero = _mm256_cmp_pd(v_rem, _mm256_setzero_pd(), _CMP_EQ_OQ);
+        // Lane mask: all bits set where the divisor is <= sqrt(n).
         __m256d in_range = _mm256_cmp_pd(v_d, v_limit, _CMP_LE_OQ);
 
-        // A lane only counts if it divides n and the divisor is <= sqrt(n)
+        // A lane only counts if it divides n and the divisor is <= sqrt(n).
+        // movemask packs the sign bit of each lane into 4 bits; non-zero = a hit.
         if (_mm256_movemask_pd(_mm256_and_pd(is_zero, in_range)) != 0)
             return false;
 
+        // Move to the next four divisors: 5,7,11,13 -> 17,19,23,25 -> ...
         v_div_i = _mm_add_epi32(v_div_i, v_step);
     }
 
+    // No divisor found up to sqrt(n): n is prime.
     return true;
 }
 
