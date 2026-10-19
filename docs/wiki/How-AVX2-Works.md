@@ -1,6 +1,6 @@
 # How AVX2 works
 
-**English**
+🌐 **English** · [Dansk](How-AVX2-Works-da) · [Bahasa Melayu](How-AVX2-Works-ms)
 
 AVX2 is a set of CPU instructions that do the same operation on several
 numbers at once (SIMD: single instruction, multiple data). `is_prime_avx2`

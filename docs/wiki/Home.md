@@ -1,6 +1,6 @@
 # prime-numbers-c
 
-**English**
+🌐 **English** · [Dansk](Home-da) · [Bahasa Melayu](Home-ms)
 
 A small C program that lists every prime number from 0 to 1,000,000 and
 reports how long it took.
