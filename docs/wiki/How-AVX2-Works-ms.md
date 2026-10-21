@@ -101,6 +101,6 @@ sah.
 ## Bandingkan dengan program lain
 
 Pembahagian cuba-cuba yang sama tanpa AVX2 terdapat dalam
-`src/prime_scalar.c`, dan ayak terdapat dalam `src/prime_sieve.c`, jadi
-ketiga-tiganya boleh dibaca sebelah-menyebelah. Lihat [Keputusan](Results-ms) untuk
+`src/prime_scalar.c`, dan ayak terdapat dalam `src/prime_sieve.c` (lihat
+[Cara ayak berfungsi](How-Sieve-Works-ms)), jadi ketiga-tiganya boleh dibaca sebelah-menyebelah. Lihat [Keputusan](Results-ms) untuk
 berapa pantas setiap satu.

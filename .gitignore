@@ -1,1 +1,4 @@
 dist/
+src/rust/target/
+src/csharp/bin/
+src/csharp/obj/
