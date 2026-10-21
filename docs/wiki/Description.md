@@ -10,7 +10,7 @@ together, not of the CPU alone.
 
 ## What it does
 
-It finds every prime from 0 to 1,000,000 in three ways, in three separate
+It finds every prime from 0 to 1,000,000 in different ways, in separate
 programs so the code is easy to compare:
 
 - `src/prime_scalar.c` builds `prime_scalar`. It tests every number with plain
@@ -18,17 +18,25 @@ programs so the code is easy to compare:
 - `src/prime_avx2.c` builds `prime_avx2`. It tests every number with
   `is_prime_avx2`, the same trial division with AVX2 (four divisors per step).
   See [How AVX2 works](How-AVX2-Works).
+- `src/prime_scalar_mt.c` and `src/prime_avx2_mt.c` build `prime_scalar_mt` and
+  `prime_avx2_mt`: the same two programs, with the numbers split across all CPU
+  threads with OpenMP. See [Results](Results) ("Parallel versions").
 - `src/prime_sieve.c` builds `prime_sieve`. It uses a sieve of Eratosthenes
   over odd numbers, kept as a bit array (about 62 KB, so it stays in the CPU
   cache). See [How the sieve works](How-Sieve-Works).
+- `src/prime_sieve_thread.c` builds `prime_sieve_thread`: the same sieve on a
+  background POSIX thread. `src/prime_cuda.cu` builds `prime_cuda`: the trial
+  division on an NVIDIA GPU. See [Results](Results) ("Background thread and GPU").
 
 Each prints every prime on its own line and writes a summary line to standard
-error:
+error (the `_mt` programs start it with the number of threads):
 
 ```text
-prime_scalar: Found 78498 primes from 0 to 1000000 in 25.330 ms (average of 10 runs)
-prime_avx2: Found 78498 primes from 0 to 1000000 in 12.856 ms (average of 10 runs)
-prime_sieve: Found 78498 primes from 0 to 1000000 in 1.103 ms (average of 10 runs)
+prime_scalar: Found 78498 primes from 0 to 1000000 in 27.675 ms (average of 10 runs)
+prime_scalar_mt: [20 threads] Found 78498 primes from 0 to 1000000 in 4.790 ms (average of 10 runs)
+prime_avx2: Found 78498 primes from 0 to 1000000 in 13.804 ms (average of 10 runs)
+prime_avx2_mt: [20 threads] Found 78498 primes from 0 to 1000000 in 3.814 ms (average of 10 runs)
+prime_sieve: Found 78498 primes from 0 to 1000000 in 1.183 ms (average of 10 runs)
 ```
 
 The same algorithms are also written in Rust (`src/rust/`) and C# (`src/csharp/`) for
@@ -36,8 +44,9 @@ comparison; see [Results](Results) for their times, build times and file sizes.
 
 The times are the average of 10 runs under WSL (see [Results](Results)). AVX2
 makes the trial division about 2 times faster than the scalar version, and the
-sieve is about 12 times faster again, because it avoids testing each number on
-its own. All three print the same primes.
+threads make each of them 3.6 to 5.8 times faster again. The serial sieve is
+still faster than all of them, because it avoids testing each number on its own.
+All five print the same primes.
 
 ## Why the time depends on the code
 

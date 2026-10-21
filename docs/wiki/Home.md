@@ -2,9 +2,10 @@
 
 🌐 **English** · [Dansk](Home-da) · [Bahasa Melayu](Home-ms)
 
-Three small C programs that each list every prime number from 0 to 1,000,000
-and report how long it took: plain trial division (`prime_scalar`), AVX2 trial
-division (`prime_avx2`) and a sieve of Eratosthenes (`prime_sieve`).
+Small C programs that each list every prime number from 0 to 1,000,000 and
+report how long it took: plain trial division (`prime_scalar`), AVX2 trial
+division (`prime_avx2`), both also on all CPU threads (`_mt`), and a sieve of
+Eratosthenes (`prime_sieve`).
 
 - [Description](Description): what the programs are for and how they differ
 - [How AVX2 works](How-AVX2-Works): the AVX2 code, step by step
