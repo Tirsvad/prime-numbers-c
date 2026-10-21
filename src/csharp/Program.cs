@@ -1,7 +1,9 @@
-// The three prime programs of the C version in one C# program:
-//   dotnet prime.dll scalar   plain trial division by 6k +/- 1
-//   dotnet prime.dll avx2     AVX2 trial division by 6k +/- 1, four divisors per step
-//   dotnet prime.dll sieve    sieve of Eratosthenes over odd numbers, one bit per number
+// The prime programs of the C version in one C# program:
+//   dotnet prime.dll scalar      plain trial division by 6k +/- 1
+//   dotnet prime.dll scalar-mt   the same on all CPU threads
+//   dotnet prime.dll avx2        AVX2 trial division by 6k +/- 1, four divisors per step
+//   dotnet prime.dll avx2-mt     the same on all CPU threads
+//   dotnet prime.dll sieve       sieve of Eratosthenes over odd numbers, one bit per number
 // Primes go to standard output, the timing line to standard error.
 using System.Diagnostics;
 using System.Runtime.Intrinsics;
@@ -89,7 +91,48 @@ static List<uint> SievePrimes()
     return primes;
 }
 
+// The numbers are independent, so the work is split across threads. The flags
+// are cut into blocks of 1024 and Parallel.For hands the next block to whichever
+// thread is free (dynamic), because larger numbers cost more to test. Every
+// number writes its own element, so the threads never touch the same memory.
+const int Block = 1024;
+const int Blocks = (int)((Limit + Block) / Block);
+
+static List<uint> ParallelScalar()
+{
+    var flags = new bool[Limit + 1];
+    Parallel.For(0, Blocks, b =>
+    {
+        uint start = (uint)b * Block;
+        uint end = Math.Min(start + Block, Limit + 1);
+        for (uint n = start; n < end; n++) flags[n] = IsPrimeScalar(n);
+    });
+    return Collect(flags);
+}
+
+static List<uint> ParallelAvx2()
+{
+    var flags = new bool[Limit + 1];
+    Parallel.For(0, Blocks, b =>
+    {
+        uint start = (uint)b * Block;
+        uint end = Math.Min(start + Block, Limit + 1);
+        for (uint n = start; n < end; n++) flags[n] = IsPrimeAvx2(n);
+    });
+    return Collect(flags);
+}
+
+// Collect the primes in order on one thread, so the output is sorted.
+static List<uint> Collect(bool[] flags)
+{
+    var primes = new List<uint>(78498);
+    for (uint n = 0; n <= Limit; n++)
+        if (flags[n]) primes.Add(n);
+    return primes;
+}
+
 string which = args.Length > 0 ? args[0] : "";
+string prefix = "";
 var result = new List<uint>(78498);
 
 // Time the computation only; printing is done afterwards.
@@ -104,11 +147,19 @@ switch (which)
         for (uint n = 0; n <= Limit; n++)
             if (IsPrimeAvx2(n)) result.Add(n);
         break;
+    case "scalar-mt":
+        result = ParallelScalar();
+        prefix = $"[{Environment.ProcessorCount} threads] ";
+        break;
+    case "avx2-mt":
+        result = ParallelAvx2();
+        prefix = $"[{Environment.ProcessorCount} threads] ";
+        break;
     case "sieve":
         result = SievePrimes();
         break;
     default:
-        Console.Error.WriteLine("usage: prime scalar|avx2|sieve");
+        Console.Error.WriteLine("usage: prime scalar|scalar-mt|avx2|avx2-mt|sieve");
         return 2;
 }
 double ms = Stopwatch.GetElapsedTime(t0).TotalMilliseconds;
@@ -122,5 +173,5 @@ using (var stdout = Console.OpenStandardOutput())
 }
 
 Console.Error.WriteLine(string.Create(System.Globalization.CultureInfo.InvariantCulture,
-    $"Found {result.Count} primes from 0 to {Limit} in {ms:F3} ms"));
+    $"{prefix}Found {result.Count} primes from 0 to {Limit} in {ms:F3} ms"));
 return 0;

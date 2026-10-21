@@ -1,10 +1,13 @@
-// The three prime programs of the C version in one Rust program:
-//   prime scalar   plain trial division by 6k +/- 1
-//   prime avx2     AVX2 trial division by 6k +/- 1, four divisors per step
-//   prime sieve    sieve of Eratosthenes over odd numbers, one bit per number
+// The prime programs of the C version in one Rust program:
+//   prime scalar      plain trial division by 6k +/- 1
+//   prime scalar-mt   the same on all CPU threads
+//   prime avx2        AVX2 trial division by 6k +/- 1, four divisors per step
+//   prime avx2-mt     the same on all CPU threads
+//   prime sieve       sieve of Eratosthenes over odd numbers, one bit per number
 // Primes go to standard output, the timing line to standard error.
 use std::arch::x86_64::*;
 use std::io::{BufWriter, Write};
+use std::sync::Mutex;
 use std::time::Instant;
 
 const LIMIT: u32 = 1_000_000;
@@ -116,9 +119,37 @@ fn sieve_primes() -> Vec<u32> {
     primes
 }
 
+// Tests every number from 0 to LIMIT on `threads` threads and returns the primes
+// in order. The numbers are independent, so the flags are cut into blocks of
+// 1024 and each thread takes the next block when it is free (dynamic), because
+// larger numbers cost more to test. Each block is a separate slice, so the
+// threads never touch the same memory.
+fn parallel_primes(test: impl Fn(u32) -> bool + Sync, threads: usize) -> Vec<u32> {
+    const BLOCK: usize = 1024;
+    let mut flags = vec![false; LIMIT as usize + 1];
+    {
+        let blocks = Mutex::new(flags.chunks_mut(BLOCK).enumerate());
+        std::thread::scope(|s| {
+            for _ in 0..threads {
+                s.spawn(|| loop {
+                    let next = blocks.lock().unwrap().next();
+                    let Some((b, block)) = next else { break };
+                    for (i, flag) in block.iter_mut().enumerate() {
+                        *flag = test((b * BLOCK + i) as u32);
+                    }
+                });
+            }
+        });
+    }
+    // Collect the primes in order on one thread, so the output is sorted.
+    (0..=LIMIT).filter(|&n| flags[n as usize]).collect()
+}
+
 fn main() {
     let which = std::env::args().nth(1).unwrap_or_default();
     let mut primes: Vec<u32> = Vec::with_capacity(LIMIT as usize / 2);
+    let threads = std::thread::available_parallelism().map_or(1, |n| n.get());
+    let mut prefix = String::new();
 
     // Time the computation only; printing is done afterwards.
     let t0 = Instant::now();
@@ -137,9 +168,17 @@ fn main() {
                 }
             }
         }
+        "scalar-mt" => {
+            primes = parallel_primes(is_prime_scalar, threads);
+            prefix = format!("[{} threads] ", threads);
+        }
+        "avx2-mt" => {
+            primes = parallel_primes(|n| unsafe { is_prime_avx2(n as u64) }, threads);
+            prefix = format!("[{} threads] ", threads);
+        }
         "sieve" => primes = sieve_primes(),
         _ => {
-            eprintln!("usage: prime scalar|avx2|sieve");
+            eprintln!("usage: prime scalar|scalar-mt|avx2|avx2-mt|sieve");
             std::process::exit(2);
         }
     }
@@ -152,5 +191,5 @@ fn main() {
     }
     out.flush().unwrap();
 
-    eprintln!("Found {} primes from 0 to {} in {:.3} ms", primes.len(), LIMIT, ms);
+    eprintln!("{}Found {} primes from 0 to {} in {:.3} ms", prefix, primes.len(), LIMIT, ms);
 }

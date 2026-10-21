@@ -2,10 +2,11 @@
 
 🌐 [English](Home) · [Dansk](Home-da) · **Bahasa Melayu**
 
-Tiga program C kecil yang masing-masing menyenaraikan semua nombor perdana dari
-0 hingga 1,000,000 dan melaporkan berapa lama ia mengambil masa: pembahagian
-cuba-cuba biasa (`prime_scalar`), pembahagian cuba-cuba AVX2 (`prime_avx2`) dan
-ayak Eratosthenes (`prime_sieve`).
+Program C kecil yang masing-masing menyenaraikan semua nombor perdana dari 0
+hingga 1,000,000 dan melaporkan berapa lama ia mengambil masa: pembahagian
+cuba-cuba biasa (`prime_scalar`), pembahagian cuba-cuba AVX2 (`prime_avx2`),
+kedua-duanya juga pada semua thread CPU (`_mt`), dan ayak Eratosthenes
+(`prime_sieve`).
 
 - [Penerangan](Description-ms): kegunaan program dan cara ia berbeza
 - [Cara AVX2 berfungsi](How-AVX2-Works-ms): kod AVX2, langkah demi langkah
