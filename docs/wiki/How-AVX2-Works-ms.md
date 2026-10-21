@@ -97,3 +97,10 @@ sehingga 4,294,967,295.
 Ia datang daripada `<immintrin.h>`. Bina dengan `-mavx2` (gcc/clang) atau
 `/arch:AVX2` (MSVC). Pada CPU tanpa AVX2 program akan ranap dengan arahan tidak
 sah.
+
+## Bandingkan dengan program lain
+
+Pembahagian cuba-cuba yang sama tanpa AVX2 terdapat dalam
+`src/prime_scalar.c`, dan ayak terdapat dalam `src/prime_sieve.c`, jadi
+ketiga-tiganya boleh dibaca sebelah-menyebelah. Lihat [Keputusan](Results-ms) untuk
+berapa pantas setiap satu.

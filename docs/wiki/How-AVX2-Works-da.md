@@ -94,3 +94,9 @@ grunden til, at funktionen kun understøtter `n` op til 4.294.967.295.
 
 De kommer fra `<immintrin.h>`. Byg med `-mavx2` (gcc/clang) eller `/arch:AVX2`
 (MSVC). På en CPU uden AVX2 ville programmet gå ned med en ugyldig instruktion.
+
+## Sammenlign med de andre programmer
+
+Den samme prøvedivision uden AVX2 findes i `src/prime_scalar.c`, og sien findes
+i `src/prime_sieve.c`, så de tre kan læses side om side. Se
+[Resultater](Results-da) for, hvor meget hurtigere hver af dem er.
