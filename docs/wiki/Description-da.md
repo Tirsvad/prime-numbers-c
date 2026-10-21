@@ -10,16 +10,30 @@ sammen, ikke CPU'en alene.
 
 ## Hvad det gør
 
-Programmet tester hvert tal fra 0 til 1.000.000 med `is_prime_avx2`, som bruger
-AVX2-prøvedivision med 6k ± 1 (fire divisorer pr. trin). Det udskriver hvert
-primtal på sin egen linje og skriver en opsummering til standard error:
+Programmet finder alle primtal fra 0 til 1.000.000 på tre måder, i tre separate
+programmer, så koden er nem at sammenligne:
+
+- `src/prime_scalar.c` bygger `prime_scalar`. Det tester hvert tal med almindelig
+  prøvedivision med 6k ± 1, én divisor pr. trin, uden AVX2.
+- `src/prime_avx2.c` bygger `prime_avx2`. Det tester hvert tal med
+  `is_prime_avx2`, den samme prøvedivision med AVX2 (fire divisorer pr. trin).
+  Se [Sådan virker AVX2](How-AVX2-Works-da).
+- `src/prime_sieve.c` bygger `prime_sieve`. Det bruger Eratosthenes' si over
+  ulige tal, gemt som et bitfelt (ca. 62 KB, så det bliver i CPU'ens cache).
+
+Alle udskriver hvert primtal på sin egen linje og skriver en opsummering til
+standard error:
 
 ```text
-Found 78498 primes from 0 to 1000000 in 13.806 ms
+prime_scalar: Found 78498 primes from 0 to 1000000 in 46.692 ms (gennemsnit af 10 kørsler)
+prime_avx2: Found 78498 primes from 0 to 1000000 in 15.841 ms (gennemsnit af 10 kørsler)
+prime_sieve: Found 78498 primes from 0 to 1000000 in 1.191 ms (gennemsnit af 10 kørsler)
 ```
 
-78.498 er det kendte antal primtal op til 1.000.000, så opsummeringen virker
-også som kontrol af, at resultatet er rigtigt.
+Tiderne er gennemsnittet af 10 kørsler under WSL (se [Resultater](Results-da)).
+AVX2 gør prøvedivisionen omkring 3 gange hurtigere end den skalare version, og
+sien er omkring 13 gange hurtigere igen, fordi den undgår at teste hvert tal for
+sig. Alle tre udskriver de samme primtal.
 
 ## Hvorfor tiden afhænger af koden
 

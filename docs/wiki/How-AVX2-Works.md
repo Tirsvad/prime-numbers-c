@@ -93,3 +93,9 @@ also why the function supports `n` only up to 4,294,967,295.
 They come from `<immintrin.h>`. Build with `-mavx2` (gcc/clang) or
 `/arch:AVX2` (MSVC); on a CPU without AVX2 the program would crash with an
 illegal instruction.
+
+## Compare with the other programs
+
+The same trial division without AVX2 is in `src/prime_scalar.c`, and the sieve
+is in `src/prime_sieve.c`, so the three can be read side by side. See
+[Results](Results) for how much faster each is.
