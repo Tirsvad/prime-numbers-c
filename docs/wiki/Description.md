@@ -20,20 +20,23 @@ programs so the code is easy to compare:
   See [How AVX2 works](How-AVX2-Works).
 - `src/prime_sieve.c` builds `prime_sieve`. It uses a sieve of Eratosthenes
   over odd numbers, kept as a bit array (about 62 KB, so it stays in the CPU
-  cache).
+  cache). See [How the sieve works](How-Sieve-Works).
 
 Each prints every prime on its own line and writes a summary line to standard
 error:
 
 ```text
-prime_scalar: Found 78498 primes from 0 to 1000000 in 46.692 ms (average of 10 runs)
-prime_avx2: Found 78498 primes from 0 to 1000000 in 15.841 ms (average of 10 runs)
-prime_sieve: Found 78498 primes from 0 to 1000000 in 1.191 ms (average of 10 runs)
+prime_scalar: Found 78498 primes from 0 to 1000000 in 25.330 ms (average of 10 runs)
+prime_avx2: Found 78498 primes from 0 to 1000000 in 12.856 ms (average of 10 runs)
+prime_sieve: Found 78498 primes from 0 to 1000000 in 1.103 ms (average of 10 runs)
 ```
 
+The same algorithms are also written in Rust (`src/rust/`) and C# (`src/csharp/`) for
+comparison; see [Results](Results) for their times, build times and file sizes.
+
 The times are the average of 10 runs under WSL (see [Results](Results)). AVX2
-makes the trial division about 3 times faster than the scalar version, and the
-sieve is about 13 times faster again, because it avoids testing each number on
+makes the trial division about 2 times faster than the scalar version, and the
+sieve is about 12 times faster again, because it avoids testing each number on
 its own. All three print the same primes.
 
 ## Why the time depends on the code

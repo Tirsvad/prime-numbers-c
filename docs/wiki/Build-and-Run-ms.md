@@ -26,3 +26,29 @@ sahaja:
 ```bash
 ./dist/prime_sieve > primes.txt
 ```
+
+## Rust dan C#
+
+Tiga algoritma yang sama juga ada dalam Rust dan C#, sebagai satu program setiap
+satu yang memilih algoritma daripada argumen pertamanya. `make` tidak
+membinanya.
+
+```bash
+cargo build --release --manifest-path src/rust/Cargo.toml
+```
+
+```bash
+./src/rust/target/release/prime sieve > primes.txt
+```
+
+```bash
+dotnet build -c Release src/csharp/prime.csproj -o src/csharp/bin/out
+```
+
+```bash
+dotnet src/csharp/bin/out/prime.dll sieve > primes.txt
+```
+
+Gunakan `scalar`, `avx2` atau `sieve` sebagai argumen. Rust memerlukan `cargo`
+dan C# memerlukan .NET SDK (10). Output binaan berada dalam `src/rust/target/`
+serta `src/csharp/bin/` dan `src/csharp/obj/`, yang diabaikan oleh git.

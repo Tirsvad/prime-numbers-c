@@ -97,5 +97,5 @@ illegal instruction.
 ## Compare with the other programs
 
 The same trial division without AVX2 is in `src/prime_scalar.c`, and the sieve
-is in `src/prime_sieve.c`, so the three can be read side by side. See
-[Results](Results) for how much faster each is.
+is in `src/prime_sieve.c` (see [How the sieve works](How-Sieve-Works)), so the
+three can be read side by side. See [Results](Results) for how much faster each is.

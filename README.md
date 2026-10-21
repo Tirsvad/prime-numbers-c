@@ -15,9 +15,9 @@ i5-13600K. They were built and run under WSL 2 (Debian, gcc 12.2, `-O3`;
 `-mavx2` for all but `prime_scalar`), see the wiki page Results:
 
 ```text
-prime_scalar: Found 78498 primes from 0 to 1000000 in 46.692 ms (average of 10 runs)
-prime_avx2: Found 78498 primes from 0 to 1000000 in 15.841 ms (average of 10 runs)
-prime_sieve: Found 78498 primes from 0 to 1000000 in 1.191 ms (average of 10 runs)
+prime_scalar: Found 78498 primes from 0 to 1000000 in 25.330 ms (average of 10 runs)
+prime_avx2: Found 78498 primes from 0 to 1000000 in 12.856 ms (average of 10 runs)
+prime_sieve: Found 78498 primes from 0 to 1000000 in 1.103 ms (average of 10 runs)
 ```
 
 ## Build and run
@@ -44,6 +44,9 @@ timing line to standard error, so this saves the list and still shows the time
 ./dist/prime_sieve > primes.txt
 ```
 
+The Rust and C# versions are kept for comparison and are not built by `make`; see
+the wiki page Build and run.
+
 ## Layout
 
 | Path | Content |
@@ -51,6 +54,8 @@ timing line to standard error, so this saves the list and still shows the time
 | `src/prime_scalar.c` | plain scalar trial-division program |
 | `src/prime_avx2.c` | AVX2 trial-division program |
 | `src/prime_sieve.c` | sieve of Eratosthenes program |
+| `src/rust/` | the same three algorithms in Rust (documentation, Cargo project) |
+| `src/csharp/` | the same three algorithms in C# (documentation, .NET project) |
 | `Makefile` | build rules |
 | `docs/wiki/` | wiki pages, published to the Gitea wiki by `.gitea/workflows/publish-wiki.yml` |
 

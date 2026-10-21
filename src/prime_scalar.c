@@ -14,8 +14,9 @@ static bool is_prime_scalar(uint32_t n) {
 
     // Every prime above 3 is 6k - 1 or 6k + 1, so test d and d + 2, then move 6
     // forward. Stop once d * d > n: a factor above sqrt(n) pairs with one below it.
-    // d * d is computed in 64 bits so it cannot overflow for n near UINT32_MAX.
-    for (uint64_t d = 5; d * d <= n; d += 6)
+    // d is 32-bit so n % d is a cheap 32-bit divide; only d * d is computed in
+    // 64 bits, so it cannot overflow for n near UINT32_MAX.
+    for (uint32_t d = 5; (uint64_t)d * d <= n; d += 6)
         if (n % d == 0 || n % (d + 2) == 0)
             return false;
 

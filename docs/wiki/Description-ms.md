@@ -21,20 +21,23 @@ dalam tiga program berasingan supaya kod mudah dibandingkan:
   setiap langkah). Lihat [Cara AVX2 berfungsi](How-AVX2-Works-ms).
 - `src/prime_sieve.c` membina `prime_sieve`. Ia menggunakan ayak Eratosthenes
   ke atas nombor ganjil, disimpan sebagai tatasusunan bit (kira-kira 62 KB,
-  jadi ia kekal dalam cache CPU).
+  jadi ia kekal dalam cache CPU). Lihat [Cara ayak berfungsi](How-Sieve-Works-ms).
 
 Semuanya mencetak setiap nombor perdana pada barisnya sendiri dan menulis
 baris ringkasan ke standard error:
 
 ```text
-prime_scalar: Found 78498 primes from 0 to 1000000 in 46.692 ms (purata 10 larian)
-prime_avx2: Found 78498 primes from 0 to 1000000 in 15.841 ms (purata 10 larian)
-prime_sieve: Found 78498 primes from 0 to 1000000 in 1.191 ms (purata 10 larian)
+prime_scalar: Found 78498 primes from 0 to 1000000 in 25.330 ms (purata 10 larian)
+prime_avx2: Found 78498 primes from 0 to 1000000 in 12.856 ms (purata 10 larian)
+prime_sieve: Found 78498 primes from 0 to 1000000 in 1.103 ms (purata 10 larian)
 ```
 
+Algoritma yang sama juga ditulis dalam Rust (`src/rust/`) dan C# (`src/csharp/`) untuk
+perbandingan; lihat [Keputusan](Results-ms) untuk masa, masa bina dan saiz fail mereka.
+
 Masa ialah purata 10 larian di bawah WSL (lihat [Keputusan](Results-ms)). AVX2
-menjadikan pembahagian cuba-cuba kira-kira 3 kali lebih pantas daripada versi
-skalar, dan ayak kira-kira 13 kali lebih pantas lagi kerana ia tidak menguji
+menjadikan pembahagian cuba-cuba kira-kira 2 kali lebih pantas daripada versi
+skalar, dan ayak kira-kira 12 kali lebih pantas lagi kerana ia tidak menguji
 setiap nombor secara berasingan. Ketiga-tiganya mencetak nombor perdana yang
 sama.
 
